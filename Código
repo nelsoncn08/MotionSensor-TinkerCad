@@ -1,0 +1,90 @@
+// Variáveis
+const int SensorMov = A5;
+int MRoxo = 12;
+int MRoza = 11;
+int LVel = 25;
+int HVel = 75;
+int i = 0;
+
+
+void setup ()
+{
+  // Inicia o serial
+  Serial.begin(9600);
+  
+  // Define o pino 2 como saída
+  pinMode(2 , OUTPUT);
+  // Apaga o LED verde
+  digitalWrite(2 , LOW);
+  
+  // Define o pino 4 como saída
+  pinMode(4 , OUTPUT);
+  // Apaga o LED vermelho
+  digitalWrite(4 , LOW);
+  
+  // Define o pino 7 como saída
+  pinMode(7 , OUTPUT);
+  
+  // Define os pinos 12 e 13 como saída
+  pinMode(MRoxo , OUTPUT);
+  pinMode(MRoza , OUTPUT);
+  // Desliga o motor
+  analogWrite(MRoxo , 0);
+  analogWrite(MRoza , 0);
+}
+
+void loop ()
+{
+  // Lê o pino A5 e atribui seu valor à variável SensorVal
+  int SensorVal = analogRead(SensorMov);
+  // Imprime o valor do SensorVal
+  Serial.println(SensorVal);
+  
+  // Se detectar movimento por até 3 segundos
+  if(SensorVal != 0 & i <= 12)
+  {
+    // Acende o LED verde
+    digitalWrite(2 , HIGH);
+    // Diminui a velocidade do motor
+    analogWrite(MRoza , LVel);
+    analogWrite(MRoxo, 0);
+    i += 1;
+  }
+  // Se detectar movimento dentro de 3 a 6 segundos
+  else if(SensorVal != 0 & i > 12 & i <= 24)
+  {
+    // Apaga o LED verde
+    digitalWrite(2 , LOW);
+    // Acende o LED vermelho
+    digitalWrite(4 , HIGH);
+    // Aumenta a velocidade do motor
+    analogWrite(MRoza , HVel);
+    analogWrite(MRoxo, 0);
+    i += 1;
+  }
+  // Se detectar movimento por mais que 6 segundos
+  else if(SensorVal != 0 & i > 24)
+  {
+    // Apaga os LEDs verde
+    digitalWrite(2 , LOW);
+    digitalWrite(4 , LOW);
+    // Desliga o motor
+    analogWrite(MRoza , 0);
+    analogWrite(MRoxo, 0);
+    // Liga o alarme
+	tone(7, 220, 100);
+  }
+  // Se não detectar movimento
+  else if(SensorVal == 0)
+  {
+    // Apaga os LEDs
+    digitalWrite(2, LOW);
+    digitalWrite(4, LOW);
+    // Desliga o motor
+    analogWrite(MRoza, 0);
+    analogWrite(MRoxo, 0);
+    i = 0;
+  }
+  
+  delay(250); // Aguarda 250 milisegundos 
+}
